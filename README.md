@@ -6,4 +6,4 @@ CLIs.
 ## Note
 
 All JSON schemas map to better TlDr pages in the same locations in a [page
-repository](https://github.com/emilyseville7cfg-better-tldr/markdown-cli-pages).
+repository](https://github.com/emilyseville7cfg-better-tldr/yaml-directory-pages).
