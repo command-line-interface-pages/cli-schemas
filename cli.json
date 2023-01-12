@@ -1,0 +1,254 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "option": {
+            "title": "cli option",
+            "description": "A CLI option for the current command",
+            "type": "object",
+            "required": [
+                "description",
+                "aliases"
+            ],
+            "properties": {
+                "description": {
+                    "description": "A CLI option description for the current command",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "aliases": {
+                    "description": "A CLI option aliases for the current command",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                        "description": "A CLI option alias for the current command",
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^(/.+|--?.+)$"
+                    }
+                },
+                "assignmentOperators": {
+                    "description": "CLI option assignment operators for the current command\nIf value can be sticked to an option use `` assignment operator",
+                    "type": "array",
+                    "items": {
+                        "description": "A CLI option assignment operator for the current command",
+                        "type": "string",
+                        "maxLength": 1,
+                        "default": " ",
+                        "examples": [
+                            "",
+                            " ",
+                            "=",
+                            ":"
+                        ]
+                    }
+                },
+                "argumentType": {
+                    "description": "A CLI option argument type for the current command\nUse `none` when no argument expected; use `custom` for defining custom argument type",
+                    "type": "string",
+                    "enum": [
+                        "none",
+                        "string",
+                        "integer",
+                        "float",
+                        "range",
+                        "path",
+                        "directory",
+                        "custom"
+                    ]
+                },
+                "argumentValidators": {
+                    "description": "CLI option argument type validators for the current command",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                        "description": "CLI option argument type validators for the current command",
+                        "type": "object",
+                        "oneOf": [
+                            {
+                                "properties": {
+                                    "minimumLength": {
+                                        "description": "A minimum length validator for an option for the current command",
+                                        "type": "integer",
+                                        "minimum": 0
+                                    }
+                                }
+                            },
+                            {
+                                "properties": {
+                                    "maximumLength": {
+                                        "description": "A maximum length validator for an option for the current command",
+                                        "type": "integer",
+                                        "minimum": 0
+                                    }
+                                }
+                            },
+                            {
+                                "properties": {
+                                    "minimum": {
+                                        "description": "A minimum validator for an option for the current command",
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            {
+                                "properties": {
+                                    "maximum": {
+                                        "description": "A maximum validator for an option for the current command",
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            {
+                                "properties": {
+                                    "absolutePath": {
+                                        "description": "Absolute path validator for an option for the current command",
+                                        "type": "boolean"
+                                    }
+                                }
+                            },
+                            {
+                                "properties": {
+                                    "custom": {
+                                        "description": "A custom validator running external command for an option for the current command",
+                                        "type": "string",
+                                        "required": [
+                                            "command"
+                                        ],
+                                        "properties": {
+                                            "command": {
+                                                "description": "A command to validate option value for the current command\ngcc output format is expected",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "subcommand": {
+            "title": "cli subcommand",
+            "description": "A CLI subcommand for the current command",
+            "type": "object",
+            "required": [
+                "description",
+                "aliases"
+            ],
+            "properties": {
+                "description": {
+                    "description": "A CLI subcommand description for the current command",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "aliases": {
+                    "description": "A CLI subcommand aliases for the current command",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                        "description": "A CLI subcommand alias for the current command",
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^[^-/].*$"
+                    }
+                },
+                "options": {
+                    "description": "List of all CLI options for the current command",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/option"
+                    }
+                },
+                "exclusiveOptions": {
+                    "description": "Lists of exclusive CLI options for the current command",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "description": "Exclusive CLI options for the current command",
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 1,
+                        "items": {
+                            "description": "A CLI option for the current command",
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    }
+                },
+                "enableAdditionalOptions": {
+                    "description": "Whether to permit passing not mentioned options",
+                    "type": "boolean",
+                    "default": false
+                },
+                "subcommands": {
+                    "$ref": "#/definitions/subcommand"
+                },
+                "enableAdditionalSubcommands": {
+                    "description": "Whether to permit passing not mentioned subcommands",
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "description": "CLI schema for commands",
+    "type": "object",
+    "properties": {
+        "enableJoiningShortOptions": {
+            "description": "Whether to permit join short options",
+            "type": "boolean",
+            "default": "false"
+        },
+        "options": {
+            "description": "List of all CLI options for the current command",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "$ref": "#/definitions/option"
+            }
+        },
+        "exclusiveOptions": {
+            "description": "Lists of exclusive CLI options for the current command",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "description": "Exclusive CLI options for the current command",
+                "type": "array",
+                "uniqueItems": true,
+                "minItems": 1,
+                "items": {
+                    "description": "A CLI option for the current command",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "enableAdditionalOptions": {
+            "description": "Whether to permit passing not mentioned options",
+            "type": "boolean",
+            "default": false
+        },
+        "subcommands": {
+            "description": "List of all CLI subcommands for the current command",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "$ref": "#/definitions/subcommand"
+            }
+        },
+        "enableAdditionalSubcommands": {
+            "description": "Whether to permit passing not mentioned subcommands",
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "additionalProperties": false
+}
